@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link href="css/fileinput.min.css" media="all" rel="stylesheet"
+	type="text/css" />
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.collapse.js"></script>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+<script type="text/javascript"
+	src="http://api.map.baidu.com/api?v=2.0&ak=yvix1hEdHnl5VRRewCdClZGn"></script>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.form.js"></script>
+
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+th {
+	font-size: 20px;
+}
+
+label {
+	font-size: 22px;
+}
+
+.submitInfo {
+	height: 24%;
+	width: 100%;
+	padding-left: 20%;
+	padding-top: 3%;
+	padding-bottom: 3%;
+}
+
+.resultInfo {
+	height: 20%;
+	width: 100%;
+	padding-left: 3%;
+	padding-right: 3%;
+	padding-top: 2%;
+}
+
+.resultTable {
+	height: 56%;
+	width: 100%;
+	padding-left: 2%;
+	padding-right: 2%;
+}
+
+.fileInfo {
+	height: 40%;
+	width: 100%;
+	padding-left: 20%;
+	padding-top: 10%;
+	padding-bottom: 10%;
+}
+
+.fileResult {
+	height: 60%;
+	width: 100%;
+	padding-left: 20%;
+	padding-right: 20%;
+	padding-top: 10%;
+	padding-bottom: 60%;
+}
+
+#allmap, #info {
+	margin-bottom: 0px;
+	padding-bottom: 0px
+}
+
+#allmap {
+	height: 100%;
+	width: 100%;
+	float: left;
+	position: absolute;
+	z-index: 0;
+}
+
+#info {
+	height: 100%;
+	width: 26%;
+	float: left;
+	margin-left: 74%;
+	background-color: rgba(255, 255, 255, 0.7); /*#F2F1EF*/
+	position: absolute;
+	z-index: 9999;
+	font-family: Courier New;
+	font-size: 24px;
+}
+
+#id_id {
+	height: 80%;
+}
+
+#id_file {
+	height: 80%;
+}
+
+#file_file {
+	height: 80%;
+}
+</style>
+<title>Trajectory</title>
+</head>
+
+<body>
+	<div id="allmap"></div>
+	<div id="info">
+		<div class="panel-group" id="accordion">
+			<div class="panel panel-default">
+				<div class="panel-heading"
+					style="width: 100%; background-color: rgba(159, 183, 217, 0.9)">
+					<h4 class="panel-title text-center" style="width: 100%">
+						<a data-toggle="collapse" data-parent="#accordion"
+							href="#collapseOne" style="width: 100%"> <label
+							style="width: 100%">Mode 1</label>
+						</a>
+					</h4>
+				</div>
+				<div id="collapseOne" class="panel-collapse collapse"
+					style="background-color: rgba(159, 183, 217, 0.3)">
+					<div class="panel-body">
+						<form id="submitPathId" class="submitInfo form-inline"
+							method="get" role="form">
+							<div class="form-group">
+								<label><input class="form-control" type="hidden"
+									name="mode" value="1"> PathId&nbsp;&nbsp;&nbsp;&nbsp;</label> <input
+									class="form-control" type="text" name="pathId"
+									placeholder="1-400000" style="width: 150px"> <br>
+								<label>Measure&nbsp;&nbsp;&nbsp;</label> <select name="measure"
+									class="form-control" style="width: 150px">
+									<option value="1">DTW</option>
+									<option value="2">MD</option>
+									<option value="3">OWD</option>
+								</select> <br> <label>TimeRate&nbsp;&nbsp;</label> <input
+									class="form-control" type="text" name="timeRate"
+									placeholder="0.0-1.0" value=0 style="width: 150px"> <br>
+								<br>
+								<div class="text-center">
+									<button class="btn btn-default" type="submit">
+										<strong>Submit</strong>
+									</button>
+								</div>
+							</div>
+
+						</form>
+
+						<div class="resultInfo">
+							<div style="height: 35px">
+								<label id="loading1"></label><br>
+							</div>
+							<label>Length:</label> <label id="requestLength1"
+								style="width: 20%"></label> <label>Time:</label> <label
+								id="requestSpandTime1"></label>
+						</div>
+
+						<div class="resultTable">
+							<form class="submitShowPath" method="get">
+								<input type="hidden" name="mode" value="2">
+								<table id="showTable1" class="table table-condensed table-hover"
+									border="1"
+									style="height: 80%; border-style: solid; border-width: 1px">
+									<thead>
+										<tr>
+											<th><div class="text-center">Rank</div></th>
+											<th><div class="text-center">PathId</div></th>
+											<th><div class="text-center">Length</div></th>
+											<th><div class="text-center">Dist</div></th>
+											<th><div class="text-center"></div></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td><div class="text-center">1</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">2</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">3</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">4</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">5</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">6</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">7</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">8</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">9</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">10</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+									</tbody>
+								</table>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading"
+					style="width: 100%; background-color: rgba(161, 161, 219, 0.9)">
+					<h4 class="panel-title  text-center" style="width: 100%">
+						<a data-toggle="collapse" data-parent="#accordion"
+							href="#collapseTwo" style="width: 100%"> <label
+							style="width: 100%">Mode 2</label>
+						</a>
+					</h4>
+				</div>
+				<div id="collapseTwo" class="panel-collapse collapse"
+					style="background-color: rgba(161, 161, 219, 0.3)">
+					<div class="panel-body">
+						<form id="submitFilePath" class="submitInfo form-inline"
+							method="post" enctype="multipart/form-data">
+							<div class="form-group">
+								<div>
+									<label style="display: inline-block"><input
+										class="form-control" type="hidden" name="mode" value="3">File&nbsp;&nbsp;&nbsp;&nbsp;</label>
+									<input name="ye" readonly="readonly" id="fileshower"
+										value="&nbsp;None file"
+										style="width: 150px; height: 34px; margin-right: 0px; display: inline-block; font-size: 16px" />
+									<input type="button" value="Browse" onclick=file.click()
+										style="width: 60px; height: 34px; font-size: 14px; margin-left: 0px; display: inline-block" />
+									<input type="file" style="display: none;" id='filechooser'
+										onchange="javascript:$('#fileshower').val($('#filechooser').val())"
+										name="file">
+								</div>
+								<label>Measure&nbsp;</label> <select name="measure"
+									class="form-control" style="width: 150px">
+									<option value="1">DTW</option>
+									<option value="2">MD</option>
+									<option value="3">OWD</option>
+								</select> <br> <label>TimeRate</label> <input class="form-control"
+									type="text" name="timeRate" placeholder="0.0-1.0" value=0
+									style="width: 150px"> <br>
+								<br>
+								<div class="text-center">
+									<button class="btn btn-default" type="submit">
+										<strong>Submit</strong>
+									</button>
+								</div>
+							</div>
+						</form>
+
+						<div class="resultInfo">
+							<div style="height: 35px">
+								<label id="loading2"></label><br>
+							</div>
+							<label>Length:</label> <label id="requestLength2"
+								style="width: 20%"></label> <label>Time:</label> <label
+								id="requestSpandTime2"></label>
+						</div>
+
+
+						<div class="resultTable">
+							<form class="submitShowPath" method="get">
+								<input type="hidden" name="mode" value="2">
+								<table id="showTable2" class="table table-condensed table-hover"
+									border="1">
+									<thead>
+										<tr>
+											<th><div class="text-center">Rank</div></th>
+											<th><div class="text-center">PathId</div></th>
+											<th><div class="text-center">Length</div></th>
+											<th><div class="text-center">Dist</div></th>
+											<th><div class="text-center"></div></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td><div class="text-center">1</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">2</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">3</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">4</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">5</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">6</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">7</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">8</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">9</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+										<tr>
+											<td><div class="text-center">10</div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center"></div></td>
+											<td><div class="text-center">
+													<button class="btn col-md-12 btn-default" type="submit"
+														name="submit" style="height: 29px">
+														<strong>show</strong>
+													</button>
+												</div></td>
+										</tr>
+									</tbody>
+								</table>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading"
+					style="width: 100%; background-color: rgba(200, 160, 219, 0.9)">
+					<h4 class="panel-title  text-center" style="width: 100%">
+						<a data-toggle="collapse" data-parent="#accordion"
+							href="#collapseThree" style="width: 100%"> <label
+							style="width: 100%">Mode 3</label>
+						</a>
+					</h4>
+				</div>
+				<div id="collapseThree" class="panel-collapse collapse"
+					style="background-color: rgba(200, 160, 219, 0.3)">
+					<div class="panel-body">
+						<div class="fileInfo">
+							<form id="submitTwoFilePath" class="form-inline" method="post"
+								enctype="multipart/form-data">
+								<div class="form-group">
+									<label style="display: inline-block"><input
+										class="form-control" type="hidden" name="mode">File1&nbsp;&nbsp;&nbsp;</label>
+									<input name="ye1" id="fileshower1" readonly="readonly"
+										value="&nbsp;None file"
+										style="width: 150px; height: 34px; margin-right: 0px; display: inline-block; font-size: 16px" />
+									<input type="button" value="Browse" onclick=file1.click()
+										style="width: 60px; height: 34px; font-size: 14px; margin-left: 0px; display: inline-block" />
+									<input type="file" id="filechooser1" style="display: none;"
+										onchange="javascript:$('#fileshower1').val($('#filechooser1').val())"
+										name="file1"> <br> <label
+										style="display: inline-block"><input
+										class="form-control" type="hidden" name="mode">File2&nbsp;&nbsp;&nbsp;</label>
+									<input name="ye2" readonly="readonly" id="fileshower2"
+										value="&nbsp;None file"
+										style="width: 150px; height: 34px; margin-right: 0px; display: inline-block; font-size: 16px" />
+									<input type="button" value="Browse" onclick=file2.click()
+										style="width: 60px; height: 34px; font-size: 14px; margin-left: 0px; display: inline-block" />
+									<input type="file" style="display: none;" id="filechooser2"
+										onchange="javascript:$('#fileshower2').val($('#filechooser2').val())"
+										name="file2"> <br> <label>TimeRate</label> <input
+										class="form-control" type="text" name="timeRate"
+										placeholder="0.0-1.0" value=0 style="width: 150px"> <br>
+									<br> <label>Measure&nbsp;</label> <select name="measure"
+										class="form-control" style="width: 150px">
+										<option value="1">DTW</option>
+										<option value="2">MD</option>
+										<option value="3">OWD</option>
+									</select> <br>
+									<br>
+									<div class="text-center">
+										<button class="btn btn-default" type="submit">
+											<strong>Submit</strong>
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="fileResult">
+							<label>Length1:</label> <label id="length1"></label><br> <label>Length2:</label>
+							<label id="length2"></label><br> <label>Dist:</label> <label
+								id="Sc"></label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+
+
+</body>
+
+<script type="text/javascript">
+	$(document)
+			.ready(
+					function() {
+
+						var option1 = {
+
+							beforeSubmit : function() {
+								$("#loading1").html("loading...");
+								$("#requestSpandTime1").html("");
+								$("#requestLength1").html("");
+								for (i = 1; i <= 10; i++) {
+									for (j = 1; j <= 3; j++) {
+										document.getElementById("showTable1").rows[i].cells[j].innerHTML = "";
+									}
+								}
+							},
+							success : function(data) {
+								$("#loading1").html("");
+								json = $.parseJSON(data);
+								$("#requestLength1").html(json.length);
+								for (i = 0; i < json.trajs[0].length; i++) {
+									document.getElementById("showTable1").rows[i + 1].cells[1].innerHTML = json.trajs[0][i].trajId;
+									document.getElementById("showTable1").rows[i + 1].cells[4].innerHTML = '<div class="text-center"><button class="btn btn-default" type="submit" name="'+json.trajs[0][i].trajId+'" style="height:29px"><strong>show</strong></button></div>';
+									document.getElementById("showTable1").rows[i + 1].cells[2].innerHTML = json.trajs[0][i].length;
+									document.getElementById("showTable1").rows[i + 1].cells[3].innerHTML = json.trajs[0][i].value;
+								}
+								$("#requestSpandTime1").html(
+										json.spandTime + "ms");
+								eval(json.data[0]);
+							}
+						};
+						$("#submitPathId").ajaxForm(option1).submit(function() {
+							return false;
+						});
+
+						$(".submitShowPath").ajaxForm(function(data) {
+							json = $.parseJSON(data);
+							eval(json.data[0]);
+						});
+
+						var option2 = {
+
+							beforeSubmit : function() {
+								$("#loading2").html("loading");
+								$("#requestLength2").html("");
+								$("#requestSpandTime2").html("");
+								for (i = 1; i <= 10; i++) {
+									for (j = 1; j <= 3; j++) {
+										document.getElementById("showTable2").rows[i].cells[j].innerHTML = "";
+									}
+								}
+							},
+							success : function(data) {
+								$("#loading2").html("");
+								json = $.parseJSON(data);
+								$("#requestLength2").html(json.length);
+								for (i = 0; i < 10; i++) {
+									document.getElementById("showTable2").rows[i + 1].cells[1].innerHTML = json.trajs[0][i].trajId;
+									document.getElementById("showTable2").rows[i + 1].cells[4].innerHTML = '<div class="text-center"><button class="btn btn-default" type="submit" name="'+json.trajs[0][i].trajId+'" style="height:29px"><strong>show</strong></button></div>';
+									document.getElementById("showTable2").rows[i + 1].cells[2].innerHTML = json.trajs[0][i].length;
+									document.getElementById("showTable2").rows[i + 1].cells[3].innerHTML = json.trajs[0][i].value;
+								}
+								$("#requestSpandTime2").html(
+										json.spandTime + "ms");
+								eval(json.data[0]);
+							}
+						};
+
+						$("#submitFilePath").ajaxForm(option2).submit(
+								function() {
+									return false;
+								});
+						$("#submitTwoFilePath").ajaxForm(function(data) {
+							json = $.parseJSON(data);
+							$("#length1").html(json.length1);
+							$("#length2").html(json.length2);
+							$("#Sc").html(json.score);
+							eval(json.data[0]);
+						});
+					});
+</script>
+
+
+<script type="text/javascript">
+	var map;
+	function loadMap(x, y) {
+		map = new BMap.Map("allmap");
+		map.centerAndZoom(new BMap.Point(x, y), 13);
+		map.enableScrollWheelZoom();
+	}
+
+	loadMap(116.403875, 39.915168);
+	function drawPath(array) {
+		var polyline = new BMap.Polyline(array, {
+			strokeColor : "blue",
+			strokeWeight : 5,
+			strokeOpacity : 0.5
+		});
+		map.addOverlay(polyline);
+		var begin = new BMap.Circle(array[0], 50)
+		begin.setStrokeWeight(1)
+		begin.setFillColor("green")
+		map.addOverlay(begin);
+		for (var i = 1; i < array.length - 1; i++) {
+			var point = new BMap.Circle(array[i], 10)
+			point.setFillColor("black")
+			point.setStrokeWeight(1)
+			map.addOverlay(point)
+		}
+		var end = new BMap.Circle(array[array.length - 1], 50)
+		end.setFillColor("red")
+		end.setStrokeWeight(1)
+		map.addOverlay(end);
+	}
+
+	function drawSubPath(array) {
+		var polyline = new BMap.Polyline(array, {
+			strokeColor : "black",
+			strokeWeight : 5,
+			strokeOpacity : 0.5
+		});
+		map.addOverlay(polyline);
+		var begin = new BMap.Circle(array[0], 50)
+		begin.setStrokeWeight(1)
+		begin.setFillColor("green")
+		map.addOverlay(begin);
+		for (var i = 1; i < array.length - 1; i++) {
+			var point = new BMap.Circle(array[i], 3)
+			point.setFillColor("black")
+			point.setStrokeWeight(1)
+			map.addOverlay(point)
+		}
+		var end = new BMap.Circle(array[array.length - 1], 50)
+		end.setFillColor("red")
+		end.setStrokeWeight(1)
+		map.addOverlay(end);
+	}
+	/*
+	sample
+	var trajectory = new Array(new BMap.Point(118.92761, 31.92705),
+			new BMap.Point(118.93761, 31.91705), new BMap.Point(118.94761,
+					31.90705), new BMap.Point(118.95761, 31.80705),
+			new BMap.Point(118.96761, 31.81705), new BMap.Point(118.97761,
+					31.82705), new BMap.Point(118.98761, 31.83705),
+			new BMap.Point(118.99761, 31.84705), new BMap.Point(118.22761,
+					31.85705), new BMap.Point(118.23761, 31.86705),
+			new BMap.Point(118.33761, 31.87705), new BMap.Point(118.25761,
+					31.88705), new BMap.Point(118.26761, 31.89705))
+	drawPath(trajectory)
+	 */
+</script>
+
+</html>
